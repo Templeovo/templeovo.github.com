@@ -1,0 +1,381 @@
+/* 基础重置（兼容老浏览器） */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-image: url("https://templeovo.github.io/img/bg/1730486096766.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    color: #333;
+    padding-bottom: 20px;
+}
+
+/* 弹窗样式 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 1000;
+}
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 10px;
+    text-align: center;
+}
+.modal-content button {
+    margin: 10px 5px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #c0c0c0; /* 银色 */
+    cursor: pointer;
+}
+.modal-content button:hover {
+    background-color: #a0a0a0;
+}
+
+/* 汉堡菜单按钮 */
+.menu-toggle {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    background-color: #fff;
+    border: 1px solid #c0c0c0;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 999;
+}
+
+/* 汉堡菜单面板 */
+.menu-panel {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 80%;
+    max-width: 300px;
+    height: 100%;
+    background-color: #fff;
+    border-left: 2px solid #c0c0c0;
+    padding: 20px;
+    z-index: 998;
+    overflow-y: auto;
+}
+/* 菜单头像+简介 */
+.menu-profile {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #c0c0c0;
+}
+.avatar-container {
+    width: 100px;
+    height: 100px;
+    margin-right: 15px;
+}
+.rotate-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+    -webkit-animation: rotate 10s linear infinite;
+    animation: rotate 10s linear infinite;
+}
+@-webkit-keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.profile-info h2 {
+    color: #333;
+    margin-bottom: 5px;
+}
+.profile-info p {
+    font-size: 14px;
+    color: #666;
+}
+
+/* 菜单链接项 */
+.menu-link-item {
+    margin: 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+.menu-link-item a {
+    color: #3498db;
+    text-decoration: none;
+}
+.menu-link-item a:hover {
+    text-decoration: underline;
+}
+
+/* 菜单功能说明 */
+.menu-features h3, .menu-friend-links h3 {
+    margin: 15px 0 10px;
+    color: #444;
+}
+.menu-features ul {
+    list-style: disc;
+    margin-left: 20px;
+}
+.menu-features li {
+    margin: 5px 0;
+}
+
+/* 友情链接 */
+.friend-link-item {
+    margin: 8px 0;
+}
+.friend-link-item a {
+    color: #3498db;
+    text-decoration: none;
+}
+.friend-link-item input {
+    width: 45%;
+    padding: 5px;
+    margin: 5px 2px;
+    border: 1px solid #c0c0c0;
+    border-radius: 3px;
+}
+#addFriendLink {
+    padding: 5px 10px;
+    border: none;
+    background-color: #c0c0c0;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* 页面内容容器 */
+.page-content {
+    width: 90%;
+    margin: 0 auto;
+    padding-top: 60px;
+}
+
+/* 通用区块样式 */
+.section {
+    margin: 20px 0;
+}
+.opaque-container {
+    background-color: rgba(255, 255, 255, 0.9); /* 白色+低透明度（银色感） */
+    padding: 20px;
+    border-radius: 15px;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    -webkit-box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.opaque-container h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #444;
+}
+
+/* 计数区块 */
+.counter-img {
+    text-align: center;
+}
+
+/* 资源下载项 */
+.resource-item {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+}
+.resource-img {
+    width: 40%;
+    min-width: 150px;
+    margin-right: 10px;
+}
+.resource-info {
+    width: 55%;
+    min-width: 200px;
+    padding: 10px 0;
+}
+.resource-info h3 {
+    margin-bottom: 8px;
+    color: #444;
+}
+.resource-info ul {
+    list-style: square;
+    margin-left: 20px;
+    margin-bottom: 8px;
+}
+.link-box {
+    display: inline-block;
+    padding: 5px;
+    border: 1px solid #c0c0c0;
+    border-radius: 3px;
+    background-color: #f0f0f0;
+    font-size: 12px;
+    margin: 5px 0;
+}
+.extract-code {
+    color: #ff0000;
+    font-weight: bold;
+}
+
+/* 按钮通用样式 */
+.button {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #c0c0c0; /* 银色 */
+    color: #333;
+    text-decoration: none;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    margin: 5px 0;
+}
+.button:hover {
+    background-color: #a0a0a0;
+}
+.star-button {
+    background-color: #3498db;
+    color: #fff;
+}
+.star-button:hover {
+    background-color: #2980b9;
+}
+
+/* 联系方式 */
+.contact-list {
+    text-align: center;
+}
+.contact-item {
+    margin: 10px 0;
+    font-size: 16px;
+}
+.contact-icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+.contact-item a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+/* 网站日志表格 */
+.log-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+.log-table th, .log-table td {
+    border: 1px solid #c0c0c0;
+    padding: 8px;
+    text-align: center;
+}
+.log-table th {
+    background-color: #f0f0f0;
+}
+
+/* 猫猫壁纸 */
+.wallpaper-display {
+    text-align: center;
+    margin: 10px 0;
+}
+.wallpaper-action {
+    text-align: center;
+}
+#wallpaperLink {
+    width: 80%;
+    padding: 5px;
+    margin: 5px 0;
+    border: 1px solid #c0c0c0;
+    border-radius: 3px;
+}
+
+/* 页脚 */
+.footer-section {
+    margin-top: 20px;
+}
+.footer-details {
+    margin: 10px 0;
+}
+.footer-details summary {
+    cursor: pointer;
+    font-weight: bold;
+}
+.designer-list {
+    margin: 10px 0;
+}
+.designer-item {
+    margin: 5px 0;
+}
+
+/* 音乐播放器（悬浮磁铁） */
+.music-player {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #c0c0c0;
+    z-index: 997;
+}
+.music-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    background-color: #c0c0c0;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 0 5px;
+}
+.music-progress {
+    width: 150px;
+    vertical-align: middle;
+}
+
+/* 响应式适配（兼容手机/平板/电脑） */
+@media (max-width: 768px) {
+    .resource-item {
+        flex-direction: column;
+    }
+    .resource-img, .resource-info {
+        width: 100%;
+        margin: 0;
+    }
+    .music-player {
+        width: 90%;
+    }
+    .music-progress {
+        width: 100px;
+    }
+}
+@media (min-width: 1200px) {
+    .page-content {
+        width: 80%;
+        max-width: 1200px;
+    }
+}
