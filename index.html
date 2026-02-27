@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="shortcut icon" href="https://q1.qlogo.cn/g?b=qq&nk=1446247945&s=640">
+    <script src="https://blog.chaxil.top/server_music_player.js"></script>
     <title>temple的个人网站</title>
     <!-- 引入CSS -->
     <link rel="stylesheet" href="style.css">
@@ -16,16 +17,6 @@
             <h3>网站公告</h3>
             <p>欢迎访问Temple的个人网站！本网站提供Minecraft/CS相关资源，请勿商用~</p>
             <button id="noticeConfirm">我知道了</button>
-        </div>
-    </div>
-
-    <!-- 音乐播放询问弹窗 -->
-    <div id="musicModal" class="modal">
-        <div class="modal-content">
-            <h3>背景音乐</h3>
-            <p>是否播放背景音乐？</p>
-            <button id="musicYes">是</button>
-            <button id="musicNo">否</button>
         </div>
     </div>
 
@@ -298,23 +289,17 @@
         </footer>
     </div>
 
-    <!-- 音乐播放器（磁铁悬浮） -->
-    <div id="musicPlayer" class="music-player">
-        <audio id="audioPlayer" loop>
-            <!-- 替换为实际音乐链接，支持多首 -->
-        <source src="entry.mp3" type="audio/mpeg">
-        <source src="LateNightDrive.mp3" type="audio/mpeg">
-        <source src="lostintranslation.mp3" type="audio/mpeg">
-        <source src="Oppai.mp3" type="audio/mpeg">
-        <source src="Patience.mp3" type="audio/mpeg">
-        </audio>
-        <button id="prevMusic" class="music-btn">◀</button>
-        <button id="playPauseMusic" class="music-btn">▶</button>
-        <button id="nextMusic" class="music-btn">▶▶</button>
-        <input type="range" id="musicProgress" min="0" max="100" value="0" class="music-progress">
-    </div>
-
     <!-- 引入JS -->
+     <script>
+        // 设置播放列表
+        window.serverMusicList = 
+            {
+                name: "示例歌曲",
+                artist: "示例艺术家",
+                url: "https://example.com/music.mp3"
+            }
+        ]);
+    </script>
     <script src="main.js"></script>
     <script src="music-player.js"></script>
 </body>
