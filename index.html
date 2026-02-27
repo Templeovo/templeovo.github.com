@@ -5,22 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="shortcut icon" href="https://q1.qlogo.cn/g?b=qq&nk=1446247945&s=640">
-    <script src="https://blog.chaxil.top/server_music_player.js"></script>
-    <title>temples的个人网站</title>
-    <!-- 引入CSS -->
-    <link rel="stylesheet" href="style.css">
-</head<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="shortcut icon" href="https://q1.qlogo.cn/g?b=qq&nk=1446247945&s=640">
     <title>temple的个人网站</title>
     <!-- 引入CSS -->
     <link rel="stylesheet" href="style.css">
     <!-- 音乐播放器专属样式 -->
     <style>
+        /* 全局圆角通用样式 */
+        img {
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .opaque-container {
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .resource-img img, .counter-img img, .wallpaper-display img, 
+        .contact-icon, .footer-section img {
+            border-radius: 12px;
+        }
+
         /* 音乐悬浮按钮 */
         .music-float-btn {
             position: fixed;
@@ -29,40 +32,46 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background-color: #ff6b8b;
-            color: white;
+            background-color: #e0e0e0;
+            color: #333;
             text-align: center;
             line-height: 60px;
             font-size: 24px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             z-index: 9999;
             transition: all 0.3s ease;
         }
         .music-float-btn:hover {
             transform: scale(1.1);
-            background-color: #ff4757;
+            background-color: #d0d0d0;
         }
 
-        /* 音乐播放器面板 */
+        /* 音乐播放器面板 - 弹窗样式优化 */
         .music-player-panel {
             position: fixed;
             bottom: 90px;
             right: 20px;
-            width: 320px;
+            width: 340px;
             background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            padding: 20px;
             z-index: 9998;
             display: none;
+            border: 1px solid #f0f0f0;
         }
         .music-player-panel.show {
             display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .music-info {
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         .music-title {
             font-size: 16px;
@@ -74,22 +83,35 @@
             color: #666;
             margin-top: 4px;
         }
-        /* 进度条样式 */
+        /* 进度条样式 - 增加数字显示 */
+        .music-progress-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
         .music-progress {
-            width: 100%;
+            flex: 1;
             height: 6px;
             background-color: #eee;
             border-radius: 3px;
-            margin: 15px 0;
+            margin: 0 8px;
             cursor: pointer;
+            position: relative;
         }
         .progress-bar {
             height: 100%;
-            background-color: #ff6b8b;
+            background-color: #9e9e9e;
             border-radius: 3px;
             width: 0%;
         }
-        /* 控制按钮区域 */
+        .progress-time {
+            font-size: 12px;
+            color: #666;
+            width: 40px;
+            text-align: center;
+        }
+        /* 控制按钮区域 - 银白配色 */
         .music-controls {
             display: flex;
             align-items: center;
@@ -100,21 +122,23 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: #f5f5f5;
-            border: none;
+            background-color: #f8f8f8;
+            border: 1px solid #e0e0e0;
             color: #333;
             font-size: 16px;
             cursor: pointer;
             transition: all 0.2s ease;
         }
         .control-btn:hover {
-            background-color: #ff6b8b;
-            color: white;
+            background-color: #e0e0e0;
+            color: #333;
         }
         .play-btn {
             width: 48px;
             height: 48px;
             font-size: 18px;
+            background-color: #f0f0f0;
+            border: 1px solid #d0d0d0;
         }
         /* 音量控制 */
         .music-volume {
@@ -131,19 +155,21 @@
             width: 100px;
             height: 4px;
             cursor: pointer;
+            border-radius: 2px;
         }
-        /* 弹窗样式 */
+        /* 弹窗样式 - 圆角优化 */
         .music-modal {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: #fff;
-            border-radius: 8px;
+            border-radius: 16px;
             padding: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
             z-index: 10000;
             text-align: center;
+            border: 1px solid #f0f0f0;
         }
         .music-modal p {
             margin: 0 0 15px 0;
@@ -158,14 +184,14 @@
         .modal-btn {
             padding: 8px 16px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             background-color: #f5f5f5;
             transition: all 0.2s ease;
         }
         .modal-btn.confirm {
-            background-color: #ff6b8b;
-            color: white;
+            background-color: #e0e0e0;
+            color: #333;
         }
         .modal-btn:hover {
             opacity: 0.9;
@@ -182,6 +208,59 @@
         }
         .overlay.show {
             display: block;
+        }
+
+        /* 头像旋转样式 - 点击旋转 */
+        .rotate-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.5s ease;
+        }
+        .rotate-avatar.rotating {
+            transform: rotate(360deg);
+        }
+
+        /* API区域布局优化 */
+        .cat-wallpaper-section {
+            margin: 20px 0;
+        }
+        .wallpaper-action {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .wallpaper-action .button {
+            flex-shrink: 0;
+            border-radius: 8px;
+        }
+        .wallpaper-action input {
+            flex: 1;
+            border-radius: 8px;
+            padding: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* 表格圆角 */
+        .log-table {
+            border-radius: 12px;
+            overflow: hidden;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .log-table th, .log-table td {
+            padding: 8px 12px;
+            border: 1px solid #eee;
+        }
+        .log-table th {
+            background-color: #f8f8f8;
+        }
+
+        /* 按钮通用圆角 */
+        .button, .star-button, .menu-toggle {
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -214,13 +293,18 @@
             <div class="music-title" id="musicTitle">示例歌曲</div>
             <div class="music-artist" id="musicArtist">示例艺术家</div>
         </div>
-        <div class="music-progress" id="musicProgress">
-            <div class="progress-bar" id="progressBar"></div>
+        <!-- 进度条带时间显示 -->
+        <div class="music-progress-container">
+            <span class="progress-time" id="currentTime">00:00</span>
+            <div class="music-progress" id="musicProgress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <span class="progress-time" id="totalTime">00:00</span>
         </div>
         <div class="music-controls">
             <button class="control-btn" id="prevMusicBtn">◀️</button>
             <button class="control-btn play-btn" id="togglePlayBtn">▶️</button>
-            <button class="control-btn" id="nextMusicBtn">▶️▶</button>
+            <button class="control-btn" id="nextMusicBtn">▶️</button>
         </div>
         <div class="music-volume">
             <span class="volume-icon">🔊</span>
@@ -236,7 +320,7 @@
         <!-- 菜单第一部分：头像+简介 -->
         <div class="menu-profile">
             <div class="avatar-container">
-                <img src="https://q1.qlogo.cn/g?b=qq&nk=1446247945&s=640" alt="Temple头像" class="rotate-avatar">
+                <img src="https://q1.qlogo.cn/g?b=qq&nk=1446247945&s=640" alt="Temple头像" class="rotate-avatar" id="avatarImg">
             </div>
             <div class="profile-info">
                 <h2>𝙏𝙚𝙢𝙥𝙡𝙚</h2>
@@ -359,7 +443,7 @@
                 <!-- 6. 可爱的猫猫图片 -->
                 <div class="resource-item">
                     <div class="resource-img">
-                        <img src="https://wj.xo.je/uploads/69a057d733294_file.jpg" alt="猫猫图片" width="100%">
+                        <img src="https://wj.xo.je/uploads/69a1290961447_pic.jpg" alt="猫猫图片" width="100%">
                     </div>
                     <div class="resource-info">
                         <h3>可爱的猫猫图片❤️</h3>
@@ -466,21 +550,21 @@
                     <img src="https://img.moehu.org/pic.php?id=gcmm&cdn=cf&size=mw1024" alt="猫猫壁纸" width="80%">
                 </div>
                 <div class="wallpaper-action">
-                    <button id="copyWallpaperLink" class="button">复制壁纸链接</button>
-                    <input type="text" id="wallpaperLink" value="https://img.moehu.org/pic.php?id=gcmm&cdn=cf&size=mw1024" readonly>
+                    <button id="copyWallpaperLink1" class="button">复制壁纸链接</button>
+                    <input type="text" id="wallpaperLink1" value="https://img.moehu.org/pic.php?id=gcmm&cdn=cf&size=mw1024" readonly>
                 </div>
             </div>
         </section>
         <!-- 第六部分：猫猫壁纸API -->
         <section class="section cat-wallpaper-section">
             <div class="opaque-container">
-                <h2>甘城猫猫壁纸壁纸API（第三方API）</h2>
+                <h2>甘城猫猫壁纸API（第三方API）</h2>
                 <div class="wallpaper-display">
                     <img src="https://img.moehu.org/pic.php?id=myn&cdn=cf&size=mw1024" alt="猫猫壁纸" width="80%">
                 </div>
                 <div class="wallpaper-action">
-                    <button id="copyWallpaperLink" class="button">复制壁纸链接</button>
-                    <input type="text" id="wallpaperLink" value="https://img.moehu.org/pic.php?id=myn&cdn=cf&size=mw1024" readonly>
+                    <button id="copyWallpaperLink2" class="button">复制壁纸链接</button>
+                    <input type="text" id="wallpaperLink2" value="https://img.moehu.org/pic.php?id=myn&cdn=cf&size=mw1024" readonly>
                 </div>
             </div>
         </section>
@@ -502,7 +586,9 @@
         // 音乐列表（可自行扩展）
         const musicList = [
             {
-                url: "Patience.mp3"
+                name: "1",
+                artist: "1",
+                url: "https://templeovo.github.io/Patience.mp3"
             },
         ];
 
@@ -526,6 +612,16 @@
         const musicProgress = document.getElementById('musicProgress');
         const progressBar = document.getElementById('progressBar');
         const volumeSlider = document.getElementById('volumeSlider');
+        const currentTimeEl = document.getElementById('currentTime');
+        const totalTimeEl = document.getElementById('totalTime');
+        const avatarImg = document.getElementById('avatarImg');
+
+        // 格式化时间为 MM:SS 格式
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
 
         // 初始化音频
         function initAudio() {
@@ -534,26 +630,41 @@
             musicTitle.textContent = musicList[currentMusicIndex].name;
             musicArtist.textContent = musicList[currentMusicIndex].artist;
 
+            // 监听音频加载完成事件
+            audio.addEventListener('loadedmetadata', () => {
+                totalTimeEl.textContent = formatTime(audio.duration);
+            });
+
             // 监听音频进度
             audio.addEventListener('timeupdate', updateProgress);
             // 音频播放结束自动下一首
             audio.addEventListener('ended', playNextMusic);
+            // 音频错误处理
+            audio.addEventListener('error', (e) => {
+                console.error('音频播放错误:', e);
+                alert('当前歌曲无法播放，自动切换下一首');
+                playNextMusic();
+            });
         }
 
-        // 更新进度条
+        // 更新进度条和时间显示
         function updateProgress() {
-            const progress = (audio.currentTime / audio.duration) * 100;
-            progressBar.style.width = `${progress}%`;
+            if (!isNaN(audio.duration)) {
+                const progress = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = `${progress}%`;
+                currentTimeEl.textContent = formatTime(audio.currentTime);
+                totalTimeEl.textContent = formatTime(audio.duration);
+            }
         }
 
         // 播放/暂停切换
         function togglePlay() {
             if (isPlaying) {
                 audio.pause();
-                togglePlayBtn.textContent = "▶";
+                togglePlayBtn.textContent = "▶️";
             } else {
                 audio.play();
-                togglePlayBtn.textContent = "⏸";
+                togglePlayBtn.textContent = "⏸️";
             }
             isPlaying = !isPlaying;
         }
@@ -564,6 +675,7 @@
             initAudio();
             if (isPlaying) {
                 audio.play();
+                togglePlayBtn.textContent = "⏸️";
             }
         }
 
@@ -573,6 +685,7 @@
             initAudio();
             if (isPlaying) {
                 audio.play();
+                togglePlayBtn.textContent = "⏸️";
             }
         }
 
@@ -587,6 +700,15 @@
         // 调整音量
         function setVolume() {
             audio.volume = volumeSlider.value;
+            // 更新音量图标
+            const volumeIcon = document.querySelector('.volume-icon');
+            if (audio.volume === 0) {
+                volumeIcon.textContent = "🔇";
+            } else if (audio.volume < 0.5) {
+                volumeIcon.textContent = "🔉";
+            } else {
+                volumeIcon.textContent = "🔊";
+            }
         }
 
         // 显示/隐藏播放器面板
@@ -594,11 +716,31 @@
             musicPlayerPanel.classList.toggle('show');
         }
 
+        // 头像点击旋转
+        function toggleAvatarRotate() {
+            avatarImg.classList.add('rotating');
+            setTimeout(() => {
+                avatarImg.classList.remove('rotating');
+            }, 500);
+        }
+
+        // 复制壁纸链接
+        function copyWallpaperLink(id) {
+            const input = document.getElementById(id);
+            input.select();
+            document.execCommand('copy');
+            alert('链接已复制！');
+        }
+
         // 页面加载时显示播放询问弹窗
         window.addEventListener('load', () => {
             musicModal.style.display = 'block';
             musicOverlay.classList.add('show');
             initAudio();
+
+            // 绑定复制按钮事件
+            document.getElementById('copyWallpaperLink1').addEventListener('click', () => copyWallpaperLink('wallpaperLink1'));
+            document.getElementById('copyWallpaperLink2').addEventListener('click', () => copyWallpaperLink('wallpaperLink2'));
         });
 
         // 事件绑定
@@ -607,7 +749,7 @@
             musicOverlay.classList.remove('show');
             isPlaying = true;
             audio.play();
-            togglePlayBtn.textContent = "⏸";
+            togglePlayBtn.textContent = "⏸️";
         });
 
         cancelMusicBtn.addEventListener('click', () => {
@@ -615,7 +757,7 @@
             musicOverlay.classList.remove('show');
             isPlaying = false;
             audio.pause();
-            togglePlayBtn.textContent = "▶";
+            togglePlayBtn.textContent = "▶️";
         });
 
         musicFloatBtn.addEventListener('click', togglePlayerPanel);
@@ -624,303 +766,10 @@
         nextMusicBtn.addEventListener('click', playNextMusic);
         musicProgress.addEventListener('click', setProgress);
         volumeSlider.addEventListener('input', setVolume);
+        avatarImg.addEventListener('click', toggleAvatarRotate);
 
         // 保留原网站其他JS（如有需要可自行补充main.js/music-player.js逻辑）
     </script>
     <script src="main.js"></script>
-</body>
-</html>
-<body>
-    <!-- 公告弹窗 -->
-    <div id="noticeModal" class="modal">
-        <div class="modal-content">
-            <h3>网站公告</h3>
-            <p>欢迎访问Temple的个人网站！本网站提供Minecraft/CS相关资源，请勿商用~</p>
-            <button id="noticeConfirm">我知道了</button>
-        </div>
-    </div>
-
-    <!-- 汉堡菜单按钮 -->
-    <button id="menuToggle" class="menu-toggle">☰</button>
-
-    <!-- 汉堡菜单面板 -->
-    <div id="menuPanel" class="menu-panel">
-        <!-- 菜单第一部分：头像+简介 -->
-        <div class="menu-profile">
-            <div class="avatar-container">
-                <img src="https://q1.qlogo.cn/g?b=qq&nk=1446247945&s=640" alt="Temple头像" class="rotate-avatar">
-            </div>
-            <div class="profile-info">
-                <h2>𝙏𝙚𝙢𝙥𝙡𝙚</h2>
-                <p>一位来自广东的Minecraft玩家<br>爱好:CS Minecraft</p>
-            </div>
-        </div>
-
-        <!-- 菜单第二部分：哔哩哔哩链接 -->
-        <div class="menu-link-item">
-            <span>哔哩哔哩</span>
-            <a href="https://b23.tv/KSq2X6U" target="_blank">https://b23.tv/KSq2X6U</a>
-        </div>
-
-        <!-- 菜单第三部分：功能说明 -->
-        <div class="menu-features">
-            <h3>网站新增内容</h3>
-            <ul>
-                <li>1.UI适应老设备</li>
-                <li>2.js和css放在香港服务器加速</li>
-                <li>3.新增猫猫壁纸API</li>
-                <li>4.新增网站历史功能</li>
-            </ul>
-        </div>
-
-        <!-- 菜单第四部分：友情链接 -->
-        <div class="menu-friend-links">
-            <h3>友情链接</h3>
-            <div class="friend-link-item">
-                <a href="https://outice2024.github.io/galaxy-packs" target="_blank">Galaxy Client</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- 页面主体内容 -->
-    <div class="page-content">
-        <!-- 第一部分：网站计数 -->
-        <section class="section counter-section">
-            <div class="opaque-container">
-                <h2>可爱的网站计数工具</h2>
-                <div class="counter-img">
-                    <img src="https://count.himiku.com/get/@temple?theme=rule34" alt="访问计数" width="80%">
-                </div>
-            </div>
-        </section>
-
-        <!-- 第二部分：资源下载 -->
-        <section class="section download-section">
-            <div class="opaque-container">
-                <h2>资源下载</h2>
-
-                <!-- 1. Temple Client -->
-                <div class="resource-item">
-                    <div class="resource-img">
-                        <img src="https://wj.xo.je/uploads/69a0ef6d011e9_020457.jpg" alt="Temple Client" width="100%">
-                    </div>
-                    <div class="resource-info">
-                        <h3>Temple Client</h3>
-                        <p><strong>更新记录：</strong></p>
-                        <ul>
-                            <li>✓ 取消了伤害抖动动画</li>
-                            <li>✓ 取消了触屏圆圈</li>
-                            <li>✓ 更新入场动画</li>
-                            <li>✓ 移除自带4首音乐并添加固定的1首music</li>
-                            <li>✓ 体积变得更小了(28.13mb)</li>
-                        </ul>
-                        <p>链接：<span class="link-box">https://www.123865.com/s/3mgojv-DRWLh</span></p>
-                        <a href="https://www.123865.com/s/3mgojv-DRWLh" class="button">点我下载</a>
-                    </div>
-                </div>
-
-                <!-- 2. CS Android各种数据包 -->
-                <div class="resource-item">
-                    <div class="resource-img">
-                        <img src="https://s1.imagehub.cc/images/2024/11/18/4b140330ba00a85de195e94a50aaf5d3.jpeg" alt="CS Android数据包" width="100%">
-                    </div>
-                    <div class="resource-info">
-                        <h3>CS Android各种数据包</h3>
-                        <p>链接：<span class="link-box">https://www.123865.com/s/3mgojv-otCLh</span></p>
-                        <a href="https://www.123865.com/s/3mgojv-npWLh" class="button">点我下载</a>
-                    </div>
-                </div>
-
-                <!-- 3. CSMOS V6 -->
-                <div class="resource-item">
-                    <div class="resource-img">
-                        <img src="https://s1.imagehub.cc/images/2024/11/18/daf3654de9af5464a998fb8fe277ca41.jpeg" alt="CSMOS V6" width="100%">
-                    </div>
-                    <div class="resource-info">
-                        <h3>CSMOS V6下载链接</h3>
-                        <p>提取码：<span class="extract-code">AOEE</span></p>
-                        <p>链接：<span class="link-box">https://www.123684.com/s/YkECjv-WKB7</span></p>
-                        <a href="https://www.123684.com/s/YkECjv-WKB7" class="button">点我下载</a>
-                    </div>
-                </div>
-
-                <!-- 4. ClientMod皮肤包 -->
-                <div class="resource-item">
-                    <div class="resource-img">
-                        <img src="https://s1.imagehub.cc/images/2024/11/18/558a3bdc973fcadd508632ccb29ef60e.jpeg" alt="ClientMod皮肤包" width="100%">
-                    </div>
-                    <div class="resource-info">
-                        <h3>ClientMod皮肤包下载链接</h3>
-                        <p>链接：<span class="link-box">https://www.123912.com/s/3mgojv-2qOLh</span></p>
-                        <a href="https://www.123912.com/s/3mgojv-2qOLh" class="button">点我下载</a>
-                    </div>
-                </div>
-
-                <!-- 5. Minecraft 1.8.9存档 -->
-                <div class="resource-item">
-                    <div class="resource-img">
-                        <img src="https://s1.imagehub.cc/images/2024/11/20/2e4d97c140064c2cf37052ac4df40b99.jpeg" alt="MC 1.8.9存档" width="100%">
-                    </div>
-                    <div class="resource-info">
-                        <h3>minecraft java 1.8.9 And sever存档(包含Mod And pack)</h3>
-                        <p>链接：<span class="link-box">https://www.123865.com/s/3mgojv-jtCLh</span></p>
-                        <a href="https://www.123865.com/s/3mgojv-QcWLh-lUWLh" class="button">点我下载</a>
-                    </div>
-                </div>
-
-                <!-- 6. 可爱的猫猫图片 -->
-                <div class="resource-item">
-                    <div class="resource-img">
-                        <img src="https://wj.xo.je/uploads/69a057d733294_file.jpg" alt="猫猫图片" width="100%">
-                    </div>
-                    <div class="resource-info">
-                        <h3>可爱的猫猫图片❤️</h3>
-                        <p>链接：<span class="link-box">https://www.123865.com/s/3mgojv-TiCLh</span></p>
-                        <a href="https://www.123865.com/s/3mgojv-87WLh" class="button">点我下载</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 第三部分：联系方式 -->
-        <section class="section contact-section">
-            <div class="opaque-container">
-                <h2>联系方式</h2>
-                <div class="contact-list">
-                    <div class="contact-item">
-                        <img src="https://images.icon-icons.com/1753/PNG/96/iconfinder-social-media-applications-10qq-4102582_113820.png" alt="QQ图标" class="contact-icon">
-                        <span>1446247945</span>
-                    </div>
-                    <div class="contact-item">
-                        <img src="https://cdnjs.cloudflare.com/ajax/libs/simple-icons/9.1.0/gmail.svg" alt="邮箱图标" class="contact-icon">
-                        <span>1446247945@qq.com</span>
-                    </div>
-                    <div class="contact-item">
-                        <img src="https://cdnjs.cloudflare.com/ajax/libs/simple-icons/9.1.0/bilibili.svg" alt="B站图标" class="contact-icon">
-                        <a href="https://b23.tv/KSq2X6U" target="_blank">https://b23.tv/KSq2X6U</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 第四部分：Star -->
-        <section class="section star-section">
-            <div class="opaque-container">
-                <p>如果喜欢那就Star一下吧<a href="https://github.com/Templeovo/templeovo.github.com" target="_blank" class="button star-button">Star</a></p>
-            </div>
-        </section>
-        <!-- 新增A部分：提供者迁移 -->
-            <section class="section log-section">
-            <div class="opaque-container">
-                <h2>网站日志</h2>
-                <p>特别鸣谢这些人设计网站架构٩(๑^o^๑)۶</p>
-                <table class="log-table">
-                    <tr>
-                        <th>日期</th>
-                        <th>内容</th>
-                    </tr>
-                    <tr>
-                        <td>𝙏𝙚𝙢𝙥𝙡𝙚</td>
-                        <td>网站主站长</td>
-                    </tr>
-                    <tr>
-                        <td>minqwq</td>
-                        <td>最早负责temple的html部分(2024.10)</td>
-                    </tr>
-                    <tr>
-                        <td>𝓱𝓸𝓷𝓳𝓲𝓾</td>
-                        <td>temple的友情链接提供者</td>
-                    </tr>
-                    <tr>
-                        <td>Hanson</td>
-                        <td>负责temple的html部分(2024.11-NOW)</td>
-                    </tr>
-                </table>
-            </div>
-        </section>
-        <!-- 第五部分：网站日志 -->
-        <section class="section log-section">
-            <div class="opaque-container">
-                <h2>网站日志</h2>
-                <table class="log-table">
-                    <tr>
-                        <th>日期</th>
-                        <th>内容</th>
-                    </tr>
-                    <tr>
-                        <td>2024.10</td>
-                        <td>网站第一次建站</td>
-                    </tr>
-                    <tr>
-                        <td>2024.11</td>
-                        <td>网站被美化了</td>
-                    </tr>
-                    <tr>
-                        <td>2024.12</td>
-                        <td>网站已经成功运行2个月</td>
-                    </tr>
-                    <tr>
-                        <td>2025.1o</td>
-                        <td>网站已经成功运行1年</td>
-                    </tr>
-                    <tr>
-                        <td>2026.02</td>
-                        <td>网站第二次被美化</td>
-                    </tr>
-                </table>
-            </div>
-        </section>
- <!-- 新增部分C -->
-        <section class="section cat-wallpaper-section">
-            <div class="opaque-container">
-                <h2>甘城猫猫表情包API（第三方API）</h2>
-                <div class="wallpaper-display">
-                    <img src="https://img.moehu.org/pic.php?id=gcmm&cdn=cf&size=mw1024" alt="猫猫壁纸" width="80%">
-                </div>
-                <div class="wallpaper-action">
-                    <button id="copyWallpaperLink" class="button">复制壁纸链接</button>
-                    <input type="text" id="wallpaperLink" value="https://img.moehu.org/pic.php?id=gcmm&cdn=cf&size=mw1024" readonly>
-                </div>
-            </div>
-        </section>
-        <!-- 第六部分：猫猫壁纸API -->
-        <section class="section cat-wallpaper-section">
-            <div class="opaque-container">
-                <h2>甘城猫猫壁纸壁纸API（第三方API）</h2>
-                <div class="wallpaper-display">
-                    <img src="https://img.moehu.org/pic.php?id=myn&cdn=cf&size=mw1024" alt="猫猫壁纸" width="80%">
-                </div>
-                <div class="wallpaper-action">
-                    <button id="copyWallpaperLink" class="button">复制壁纸链接</button>
-                    <input type="text" id="wallpaperLink" value="https://img.moehu.org/pic.php?id=myn&cdn=cf&size=mw1024" readonly>
-                </div>
-            </div>
-        </section>
-
-        <!-- 页脚部分 -->
-        <footer class="footer-section">
-            <div class="opaque-container">
-                &copy; 2024-2026 Temple的个人网站 All rights reserved.
-                <br>
-                本站适应安卓5+以及iOS9+浏览器，js和css部分已做CDN加速处理
-                <span id="runtimeSpan"></span>
-                <a href="http://wapmz.com/in/192"><img src="http://wapmz.com/cn/small/192" alt="wapmz.com"></a>
-            </div>
-        </footer>
-    </div>
-
-    <!-- 引入JS -->
-     <script>
-        // 设置播放列表
-        window.serverMusicList = 
-            {
-                name: "示例歌曲",
-                artist: "示例艺术家",
-                url: "https://example.com/music.mp3"
-            }
-        ]);
-    </script>
-    <script src="main.js"></script>
-    <script src="music-player.js"></script>
 </body>
 </html>
