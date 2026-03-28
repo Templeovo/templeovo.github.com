@@ -4,20 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no">
     <link rel="shortcut icon" href="https://q1.qlogo.cn/g?b=qq&nk=1446247945&s=640">
     <title>temple的个人网站</title>
     <!-- 引入CSS -->
     <link rel="stylesheet" href="style.css">
     <!-- 音乐播放器专属样式 -->
     <style>
+        /* 基础重置 - 适配老安卓浏览器 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            line-height: 1.5;
+        }
+
         /* 全局圆角通用样式 */
         img {
             border-radius: 12px;
             transition: all 0.3s ease;
+            max-width: 100%;
+            height: auto;
         }
         .opaque-container {
             border-radius: 16px;
             overflow: hidden;
+            margin: 10px;
+            padding: 15px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         .resource-img img, .counter-img img, .wallpaper-display img, 
         .contact-icon, .footer-section img {
@@ -41,6 +64,8 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             z-index: 9999;
             transition: all 0.3s ease;
+            -webkit-user-select: none;
+            user-select: none;
         }
         .music-float-btn:hover {
             transform: scale(1.1);
@@ -53,6 +78,7 @@
             bottom: 90px;
             right: 20px;
             width: 340px;
+            max-width: 90vw;
             background-color: #fff;
             border-radius: 20px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
@@ -128,6 +154,8 @@
             font-size: 16px;
             cursor: pointer;
             transition: all 0.2s ease;
+            -webkit-appearance: none;
+            appearance: none;
         }
         .control-btn:hover {
             background-color: #e0e0e0;
@@ -156,6 +184,17 @@
             height: 4px;
             cursor: pointer;
             border-radius: 2px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #eee;
+        }
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #9e9e9e;
         }
         /* 弹窗样式 - 圆角优化 */
         .music-modal {
@@ -170,6 +209,8 @@
             z-index: 10000;
             text-align: center;
             border: 1px solid #f0f0f0;
+            max-width: 90vw;
+            width: 300px;
         }
         .music-modal p {
             margin: 0 0 15px 0;
@@ -188,6 +229,8 @@
             cursor: pointer;
             background-color: #f5f5f5;
             transition: all 0.2s ease;
+            -webkit-appearance: none;
+            appearance: none;
         }
         .modal-btn.confirm {
             background-color: #e0e0e0;
@@ -216,10 +259,20 @@
             height: 80px;
             border-radius: 50%;
             cursor: pointer;
-            transition: transform 0.5s ease;
+            display: block;
+            margin: 0 auto;
         }
         .rotate-avatar.rotating {
-            transform: rotate(360deg);
+            -webkit-animation: rotate 0.5s linear;
+            animation: rotate 0.5s linear;
+        }
+        @-webkit-keyframes rotate {
+            from { -webkit-transform: rotate(0deg); }
+            to { -webkit-transform: rotate(360deg); }
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         /* API区域布局优化 */
@@ -231,6 +284,7 @@
             align-items: center;
             gap: 10px;
             margin-top: 15px;
+            flex-wrap: wrap;
         }
         .wallpaper-action .button {
             flex-shrink: 0;
@@ -241,6 +295,7 @@
             border-radius: 8px;
             padding: 8px;
             border: 1px solid #e0e0e0;
+            min-width: 0;
         }
 
         /* 表格圆角 */
@@ -249,6 +304,7 @@
             overflow: hidden;
             border-collapse: collapse;
             width: 100%;
+            margin: 10px 0;
         }
         .log-table th, .log-table td {
             padding: 8px 12px;
@@ -261,6 +317,216 @@
         /* 按钮通用圆角 */
         .button, .star-button, .menu-toggle {
             border-radius: 8px;
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            color: #333;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        /* 汉堡菜单样式 - 修复核心问题 */
+        .menu-toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 10001;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: none;
+            font-size: 20px;
+        }
+
+        .menu-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            max-width: 90vw;
+            height: 100%;
+            background: #fff;
+            z-index: 10000;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            padding: 20px;
+            padding-top: 70px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .menu-panel.show {
+            transform: translateX(0);
+        }
+
+        .menu-profile {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-info {
+            margin-top: 15px;
+        }
+
+        .menu-link-item, .menu-features, .menu-friend-links {
+            margin: 15px 0;
+        }
+
+        .menu-link-item a, .friend-link-item a {
+            color: #007bff;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .menu-features ul, .menu-friend-links {
+            padding-left: 20px;
+        }
+
+        /* 公告弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 10001;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 90vw;
+            width: 300px;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 15px;
+        }
+
+        .modal-content button {
+            margin-top: 15px;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #e0e0e0;
+            cursor: pointer;
+        }
+
+        /* 页面内容样式 */
+        .page-content {
+            padding: 15px;
+            padding-top: 70px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .resource-item {
+            margin: 15px 0;
+        }
+
+        .resource-info {
+            margin-top: 10px;
+        }
+
+        .resource-info h3 {
+            margin-bottom: 8px;
+        }
+
+        .resource-info ul {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+
+        .link-box {
+            word-break: break-all;
+            display: block;
+            margin: 8px 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .extract-code {
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .contact-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .contact-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .star-section {
+            text-align: center;
+            padding: 15px;
+        }
+
+        .footer-section {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 适配安卓4+老浏览器 */
+        @media screen and (max-width: 480px) {
+            .opaque-container {
+                margin: 5px;
+                padding: 10px;
+            }
+            
+            .page-content {
+                padding: 10px;
+                padding-top: 60px;
+            }
+            
+            .menu-toggle {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+            
+            .music-float-btn {
+                width: 50px;
+                height: 50px;
+                line-height: 50px;
+                font-size: 20px;
+            }
+        }
+
+        /* 解决老浏览器点击延迟 */
+        .clickable {
+            cursor: pointer;
+            touch-action: manipulation;
         }
     </style>
 </head>
@@ -285,7 +551,7 @@
     </div>
 
     <!-- 音乐悬浮按钮 -->
-    <div class="music-float-btn" id="musicFloatBtn">🎵</div>
+    <div class="music-float-btn clickable" id="musicFloatBtn">🎵</div>
 
     <!-- 音乐播放器面板 -->
     <div class="music-player-panel" id="musicPlayerPanel">
@@ -296,31 +562,31 @@
         <!-- 进度条带时间显示 -->
         <div class="music-progress-container">
             <span class="progress-time" id="currentTime">00:00</span>
-            <div class="music-progress" id="musicProgress">
+            <div class="music-progress clickable" id="musicProgress">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
             <span class="progress-time" id="totalTime">00:00</span>
         </div>
         <div class="music-controls">
-            <button class="control-btn" id="prevMusicBtn">◀️</button>
-            <button class="control-btn play-btn" id="togglePlayBtn">▶️</button>
-            <button class="control-btn" id="nextMusicBtn">▶️</button>
+            <button class="control-btn clickable" id="prevMusicBtn">◀️</button>
+            <button class="control-btn play-btn clickable" id="togglePlayBtn">▶️</button>
+            <button class="control-btn clickable" id="nextMusicBtn">▶️</button>
         </div>
         <div class="music-volume">
             <span class="volume-icon">🔊</span>
-            <input type="range" min="0" max="1" step="0.01" value="0.7" class="volume-slider" id="volumeSlider">
+            <input type="range" min="0" max="1" step="0.01" value="0.7" class="volume-slider clickable" id="volumeSlider">
         </div>
     </div>
 
     <!-- 汉堡菜单按钮 -->
-    <button id="menuToggle" class="menu-toggle">☰</button>
+    <button id="menuToggle" class="menu-toggle clickable">☰</button>
 
     <!-- 汉堡菜单面板 -->
     <div id="menuPanel" class="menu-panel">
         <!-- 菜单第一部分：头像+简介 -->
         <div class="menu-profile">
             <div class="avatar-container">
-                <img src="https://q1.qlogo.cn/g?b=qq&nk=1446247945&s=640" alt="Temple头像" class="rotate-avatar" id="avatarImg">
+                <img src="https://q1.qlogo.cn/g?b=qq&nk=1446247945&s=640" alt="Temple头像" class="rotate-avatar clickable" id="avatarImg">
             </div>
             <div class="profile-info">
                 <h2>𝙏𝙚𝙢𝙥𝙡𝙚</h2>
@@ -374,7 +640,7 @@
                 <!-- 1. Temple Client -->
                 <div class="resource-item">
                     <div class="resource-img">
-                        <img src="https://wj.xo.je/uploads/69a0ef6d011e9_020457.jpg" alt="Temple Client" width="100%">
+                        <img src="https://1.888440.xyz/global-free/2026/03/28/3/69c7e6ade696a.jpg" alt="Temple Client" width="100%">
                     </div>
                     <div class="resource-info">
                         <h3>Temple Client</h3>
@@ -443,7 +709,7 @@
                 <!-- 6. 可爱的猫猫图片 -->
                 <div class="resource-item">
                     <div class="resource-img">
-                        <img src="https://wj.xo.je/uploads/69a1290961447_pic.jpg" alt="猫猫图片" width="100%">
+                        <img src="" alt="猫猫图片" width="100%">
                     </div>
                     <div class="resource-info">
                         <h3>可爱的猫猫图片❤️</h3>
@@ -532,7 +798,7 @@
                         <td>网站已经成功运行2个月</td>
                     </tr>
                     <tr>
-                        <td>2025.1o</td>
+                        <td>2025.10</td>
                         <td>网站已经成功运行1年</td>
                     </tr>
                     <tr>
@@ -550,7 +816,7 @@
                     <img src="https://img.moehu.org/pic.php?id=gcmm&cdn=cf&size=mw1024" alt="猫猫壁纸" width="80%">
                 </div>
                 <div class="wallpaper-action">
-                    <button id="copyWallpaperLink1" class="button">复制壁纸链接</button>
+                    <button id="copyWallpaperLink1" class="button clickable">复制壁纸链接</button>
                     <input type="text" id="wallpaperLink1" value="https://img.moehu.org/pic.php?id=gcmm&cdn=cf&size=mw1024" readonly>
                 </div>
             </div>
@@ -563,7 +829,7 @@
                     <img src="https://img.moehu.org/pic.php?id=myn&cdn=cf&size=mw1024" alt="猫猫壁纸" width="80%">
                 </div>
                 <div class="wallpaper-action">
-                    <button id="copyWallpaperLink2" class="button">复制壁纸链接</button>
+                    <button id="copyWallpaperLink2" class="button clickable">复制壁纸链接</button>
                     <input type="text" id="wallpaperLink2" value="https://img.moehu.org/pic.php?id=myn&cdn=cf&size=mw1024" readonly>
                 </div>
             </div>
@@ -583,6 +849,23 @@
 
     <!-- 音乐播放器核心逻辑 -->
     <script>
+        // 兼容安卓4+老浏览器的localStorage
+        function getStorage(key) {
+            try {
+                return localStorage.getItem(key);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function setStorage(key, value) {
+            try {
+                localStorage.setItem(key, value);
+            } catch (e) {
+                // 老浏览器不支持localStorage时静默失败
+            }
+        }
+
         // 音乐列表（可自行扩展）
         const musicList = [
             {
@@ -594,8 +877,9 @@
 
         // 全局变量
         let currentMusicIndex = 0;
-        let audio = new Audio();
+        let audio = null;
         let isPlaying = false;
+        let musicPreference = getStorage('musicPreference'); // 'play' 或 'pause'
 
         // DOM元素
         const musicModal = document.getElementById('musicModal');
@@ -615,23 +899,34 @@
         const currentTimeEl = document.getElementById('currentTime');
         const totalTimeEl = document.getElementById('totalTime');
         const avatarImg = document.getElementById('avatarImg');
+        const menuToggle = document.getElementById('menuToggle');
+        const menuPanel = document.getElementById('menuPanel');
+        const noticeModal = document.getElementById('noticeModal');
+        const noticeConfirm = document.getElementById('noticeConfirm');
 
         // 格式化时间为 MM:SS 格式
         function formatTime(seconds) {
+            if (isNaN(seconds)) return "00:00";
             const mins = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
-            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            return (mins < 10 ? '0' + mins : mins) + ':' + (secs < 10 ? '0' + secs : secs);
         }
 
         // 初始化音频
         function initAudio() {
+            if (!audio) {
+                audio = new Audio();
+                // 老浏览器兼容
+                audio.preload = 'metadata';
+            }
+            
             audio.src = musicList[currentMusicIndex].url;
-            audio.volume = volumeSlider.value;
+            audio.volume = parseFloat(volumeSlider.value) || 0.7;
             musicTitle.textContent = musicList[currentMusicIndex].name;
             musicArtist.textContent = musicList[currentMusicIndex].artist;
 
             // 监听音频加载完成事件
-            audio.addEventListener('loadedmetadata', () => {
+            audio.addEventListener('loadedmetadata', function() {
                 totalTimeEl.textContent = formatTime(audio.duration);
             });
 
@@ -640,18 +935,21 @@
             // 音频播放结束自动下一首
             audio.addEventListener('ended', playNextMusic);
             // 音频错误处理
-            audio.addEventListener('error', (e) => {
+            audio.addEventListener('error', function(e) {
                 console.error('音频播放错误:', e);
-                alert('当前歌曲无法播放，自动切换下一首');
+                // 老浏览器兼容的提示
+                if (typeof alert !== 'undefined') {
+                    alert('当前歌曲无法播放，自动切换下一首');
+                }
                 playNextMusic();
             });
         }
 
         // 更新进度条和时间显示
         function updateProgress() {
-            if (!isNaN(audio.duration)) {
+            if (audio && !isNaN(audio.duration)) {
                 const progress = (audio.currentTime / audio.duration) * 100;
-                progressBar.style.width = `${progress}%`;
+                progressBar.style.width = progress + '%';
                 currentTimeEl.textContent = formatTime(audio.currentTime);
                 totalTimeEl.textContent = formatTime(audio.duration);
             }
@@ -659,11 +957,16 @@
 
         // 播放/暂停切换
         function togglePlay() {
+            if (!audio) initAudio();
+            
             if (isPlaying) {
                 audio.pause();
                 togglePlayBtn.textContent = "▶️";
             } else {
-                audio.play();
+                // 老浏览器播放兼容
+                audio.play().catch(function(e) {
+                    console.error('播放失败:', e);
+                });
                 togglePlayBtn.textContent = "⏸️";
             }
             isPlaying = !isPlaying;
@@ -674,7 +977,9 @@
             currentMusicIndex = (currentMusicIndex - 1 + musicList.length) % musicList.length;
             initAudio();
             if (isPlaying) {
-                audio.play();
+                audio.play().catch(function(e) {
+                    console.error('播放失败:', e);
+                });
                 togglePlayBtn.textContent = "⏸️";
             }
         }
@@ -684,22 +989,30 @@
             currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
             initAudio();
             if (isPlaying) {
-                audio.play();
+                audio.play().catch(function(e) {
+                    console.error('播放失败:', e);
+                });
                 togglePlayBtn.textContent = "⏸️";
             }
         }
 
         // 点击进度条调整播放进度
         function setProgress(e) {
+            if (!audio) return;
+            
             const width = musicProgress.offsetWidth;
-            const clickX = e.offsetX;
+            const clickX = e.offsetX || (e.touches && e.touches[0].clientX - musicProgress.getBoundingClientRect().left);
             const duration = audio.duration;
-            audio.currentTime = (clickX / width) * duration;
+            if (clickX && duration) {
+                audio.currentTime = (clickX / width) * duration;
+            }
         }
 
         // 调整音量
         function setVolume() {
-            audio.volume = volumeSlider.value;
+            if (!audio) initAudio();
+            
+            audio.volume = parseFloat(volumeSlider.value);
             // 更新音量图标
             const volumeIcon = document.querySelector('.volume-icon');
             if (audio.volume === 0) {
@@ -718,57 +1031,134 @@
 
         // 头像点击旋转
         function toggleAvatarRotate() {
+            // 移除现有动画类（如果存在）
+            avatarImg.classList.remove('rotating');
+            // 强制重绘
+            void avatarImg.offsetWidth;
+            // 添加旋转类
             avatarImg.classList.add('rotating');
-            setTimeout(() => {
+            // 动画结束后移除类
+            setTimeout(function() {
                 avatarImg.classList.remove('rotating');
             }, 500);
         }
 
-        // 复制壁纸链接
+        // 复制壁纸链接 - 兼容老浏览器
         function copyWallpaperLink(id) {
             const input = document.getElementById(id);
-            input.select();
-            document.execCommand('copy');
-            alert('链接已复制！');
+            try {
+                input.select();
+                document.execCommand('copy');
+                alert('链接已复制！');
+            } catch (e) {
+                // 老浏览器兼容
+                input.focus();
+                input.setSelectionRange(0, input.value.length);
+                alert('链接已选中，请手动复制：' + input.value);
+            }
         }
 
-        // 页面加载时显示播放询问弹窗
-        window.addEventListener('load', () => {
-            musicModal.style.display = 'block';
-            musicOverlay.classList.add('show');
+        // 汉堡菜单切换
+        function toggleMenu() {
+            menuPanel.classList.toggle('show');
+        }
+
+        // 处理音乐偏好设置
+        function handleMusicPreference(preference) {
+            setStorage('musicPreference', preference);
+            musicPreference = preference;
+            
+            musicModal.style.display = 'none';
+            musicOverlay.classList.remove('show');
+            
+            if (!audio) initAudio();
+            
+            if (preference === 'play') {
+                isPlaying = true;
+                audio.play().catch(function(e) {
+                    console.error('自动播放失败:', e);
+                });
+                togglePlayBtn.textContent = "⏸️";
+            } else {
+                isPlaying = false;
+                audio.pause();
+                togglePlayBtn.textContent = "▶️";
+            }
+        }
+
+        // 页面加载初始化
+        window.addEventListener('load', function() {
+            // 显示公告弹窗
+            noticeModal.style.display = 'flex';
+            
+            // 初始化音频
             initAudio();
 
+            // 检查音乐偏好设置
+            if (musicPreference) {
+                // 有偏好设置，直接应用
+                handleMusicPreference(musicPreference);
+            } else {
+                // 无偏好设置，显示弹窗
+                musicModal.style.display = 'block';
+                musicOverlay.classList.add('show');
+            }
+
             // 绑定复制按钮事件
-            document.getElementById('copyWallpaperLink1').addEventListener('click', () => copyWallpaperLink('wallpaperLink1'));
-            document.getElementById('copyWallpaperLink2').addEventListener('click', () => copyWallpaperLink('wallpaperLink2'));
+            document.getElementById('copyWallpaperLink1').addEventListener('click', function() {
+                copyWallpaperLink('wallpaperLink1');
+            });
+            document.getElementById('copyWallpaperLink2').addEventListener('click', function() {
+                copyWallpaperLink('wallpaperLink2');
+            });
+
+            // 老浏览器触摸事件兼容
+            function addTouchEvent(element, handler) {
+                element.addEventListener('touchstart', handler);
+                element.addEventListener('click', handler);
+            }
+
+            // 绑定汉堡菜单事件
+            addTouchEvent(menuToggle, toggleMenu);
+            
+            // 绑定头像旋转事件
+            addTouchEvent(avatarImg, toggleAvatarRotate);
+            
+            // 绑定音乐相关事件
+            addTouchEvent(playMusicBtn, function() {
+                handleMusicPreference('play');
+            });
+            
+            addTouchEvent(cancelMusicBtn, function() {
+                handleMusicPreference('pause');
+            });
+            
+            addTouchEvent(musicFloatBtn, togglePlayerPanel);
+            addTouchEvent(togglePlayBtn, togglePlay);
+            addTouchEvent(prevMusicBtn, playPrevMusic);
+            addTouchEvent(nextMusicBtn, playNextMusic);
+            addTouchEvent(musicProgress, setProgress);
+            
+            // 音量滑块事件
+            volumeSlider.addEventListener('input', setVolume);
+            
+            // 公告弹窗确认
+            noticeConfirm.addEventListener('click', function() {
+                noticeModal.style.display = 'none';
+            });
+
+            // 点击空白处关闭菜单（老浏览器兼容）
+            document.addEventListener('click', function(e) {
+                if (!menuPanel.contains(e.target) && e.target !== menuToggle) {
+                    menuPanel.classList.remove('show');
+                }
+            });
+
+            // 解决老浏览器300ms点击延迟
+            document.addEventListener('touchstart', function() {}, false);
         });
 
-        // 事件绑定
-        playMusicBtn.addEventListener('click', () => {
-            musicModal.style.display = 'none';
-            musicOverlay.classList.remove('show');
-            isPlaying = true;
-            audio.play();
-            togglePlayBtn.textContent = "⏸️";
-        });
-
-        cancelMusicBtn.addEventListener('click', () => {
-            musicModal.style.display = 'none';
-            musicOverlay.classList.remove('show');
-            isPlaying = false;
-            audio.pause();
-            togglePlayBtn.textContent = "▶️";
-        });
-
-        musicFloatBtn.addEventListener('click', togglePlayerPanel);
-        togglePlayBtn.addEventListener('click', togglePlay);
-        prevMusicBtn.addEventListener('click', playPrevMusic);
-        nextMusicBtn.addEventListener('click', playNextMusic);
-        musicProgress.addEventListener('click', setProgress);
-        volumeSlider.addEventListener('input', setVolume);
-        avatarImg.addEventListener('click', toggleAvatarRotate);
-
-        // 保留原网站其他JS（如有需要可自行补充main.js/music-player.js逻辑）
+        // 保留原网站其他JS引用
     </script>
     <script src="main.js"></script>
 </body>
